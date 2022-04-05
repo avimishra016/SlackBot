@@ -29,20 +29,20 @@ def get_pull_requests(repo_url, access_token):
                 pull_request_data.append([pull.number, pull.title, time_string])
     return pull_request_data
 
-def main():
+def getPRoutput():
     '''print out the data collected on each pull request for each repo'''
-    path = os.getcwd() + "\\conf\\repo.yaml"
+    output = ''
+    path = os.getcwd() + "\\..\\..\\..\\conf\\repo.yaml"
     if os.path.exists(path):
         repo_token = get_repo_and_tokens(path)
         print_text = "{number:>14}: {title:>20}, {date:>21}"
         for pair in repo_token:
             data = get_pull_requests(pair[0], pair[1])
-            print("Repo_Url:", pair[0])
+            output+="Repo_Url:" + pair[0] +"\n"
             for pull_request in data:
-                print (print_text.format(number=pull_request[0], title=pull_request[1], date=pull_request[2]))
-            print()
+                output+=print_text.format(number=pull_request[0], title=pull_request[1], date=pull_request[2]) + "\n"
+            output+="\n"
     else:
         path = os.getcwd() + "\\" + path
-        print("Yaml File doesn't exist at path: ", path)
-if __name__ == "__main__" :
-    main()
+        output+="Yaml File doesn't exist at path: " + path
+    return output
