@@ -1,5 +1,2 @@
-repos:
-  - https://github.com/avimishra016/pullrequeststats.git
-
-accessToken:
-  - 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
+repo: https://github.com/avimishra016/pullrequeststats.git
+accessToken: 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

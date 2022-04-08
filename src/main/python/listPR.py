@@ -3,46 +3,45 @@ import yaml
 import os
 from github import Github
 
-def get_repo_and_tokens(pathToYaml):
-    '''reading the repos and access tokens from the yaml file'''
-    repos_and_tokens = []
+def get_repo_and_token(pathToYaml):
+    '''reading the repo and access tokens from the yaml file'''
+    repo_and_token = []
     repos = ""
     access_token = ""
     with open(pathToYaml) as file:
-        documents = yaml.full_load(file)
-        repos = documents['repos']
-        access_token = documents['accessToken']
-    for url_num in range(len(repos)):
-        repos[url_num] = repos[url_num].replace('https', 'git')
-        repos_and_tokens.append([repos[url_num], access_token[url_num]])
-    return repos_and_tokens
+        yamlDict = yaml.load(file, Loader=yaml.FullLoader)
+        repo_and_token.append(yamlDict['repo'])
+        repo_and_token.append(yamlDict['accessToken'])
+    return repo_and_token
 
 def get_pull_requests(repo_url, access_token):
     '''use the repo url and access token to get the pull requests from a repo'''
-    pull_request_data = [["PR #", "Title", "Date Created"]]
+    pull_request_data = []
     git = Github(access_token)
-    for repo in git.get_user().get_repos():
-        if repo.git_url==repo_url:
-            pulls = repo.get_pulls(state='open', sort='created', base='main')
-            for pull in pulls:
-                time_string = pull.created_at.strftime("%m/%d/%Y @ %H:%M:%S")
-                pull_request_data.append([pull.number, pull.title, time_string])
+    repo_url = repo_url[19:-4]
+    repo_url.replace('https:', 'git:')
+    repo = git.get_repo(repo_url)
+    pulls = repo.get_pulls(state='open', sort='created', base='main')
+    for pull in pulls:
+        time_string = pull.created_at.strftime("%m/%d/%Y @ %H:%M:%S")
+        pull_request_data.append([pull.number, pull.title, time_string, pull.html_url])
     return pull_request_data
 
-def getPRoutput():
-    '''print out the data collected on each pull request for each repo'''
-    output = ''
-    path = os.getcwd() + "\\..\\..\\..\\conf\\repo.yaml"
-    if os.path.exists(path):
-        repo_token = get_repo_and_tokens(path)
-        print_text = "{number:>14}: {title:>20}, {date:>21}"
-        for pair in repo_token:
-            data = get_pull_requests(pair[0], pair[1])
-            output+="Repo_Url:" + pair[0] +"\n"
-            for pull_request in data:
-                output+=print_text.format(number=pull_request[0], title=pull_request[1], date=pull_request[2]) + "\n"
-            output+="\n"
+def checkIfFileExists(path):
+    '''check if file exists'''
+    if not os.path.exists(path):
+        return False
+    return True
+
+def trial():
+    path = os.getcwd() + "\\conf\\repo.yaml"
+    data = []
+    if(checkIfFileExists(path)):
+        repo_token = get_repo_and_token(path)
+        data.append(repo_token[0])
+        arr = get_pull_requests(repo_token[0], repo_token[1])
+        for x in arr:
+            data.append(x)
     else:
-        path = os.getcwd() + "\\" + path
-        output+="Yaml File doesn't exist at path: " + path
-    return output
+        data.append(("Yaml File doesn't exist at path: " + path))
+    return data
