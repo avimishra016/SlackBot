@@ -18,8 +18,13 @@ def say_hello(message, say):
     user = message['user']
     say(f"Hi there, <@{user}>!")
 
-@app.message("Get PR")
-def getPr(message, say):
+@app.event("message")
+def handle_message_events(body, logger):
+    logger.info(body)
+
+@app.command("/getprs")
+def getPr(ack, say):
+    ack()
     blocks = [{
                 "type": "header",
                 "text": {
