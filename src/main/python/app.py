@@ -33,42 +33,39 @@ def getPr(ack, say):
                 }
 		     }]
     data = trial()
-    if len(data)==1:
-        say(data[0])
-    else:
-        url = data[0]
-        data.pop(0)
-        for x in data:
-            prNum = x[0]
-            prName = x[1]
-            prTime = x[2]
-            prUrl = x[3]
-            printedText = "*PR " + str(prNum) + "*: " + prName
-            dateText = "`Requested at: " + prTime + "`"
-            blocks.append({"type": "divider"})
-            blocks.append({
-			    "type": "section",
-			    "text": {
-				    "type": "mrkdwn",
-				    "text": printedText
-			    }
-		    })
-            blocks.append({
-                "type": "section",
+    url = data[0]
+    data.pop(0)
+    for x in data:
+        prNum = x[0]
+        prName = x[1]
+        prTime = x[2]
+        prUrl = x[3]
+        printedText = "*PR " + str(prNum) + "*: " + prName
+        dateText = "`Requested at: " + prTime + "`"
+        blocks.append({"type": "divider"})
+        blocks.append({
+			"type": "section",
+		    "text": {
+			    "type": "mrkdwn",
+			    "text": printedText
+		    }
+	    })
+        blocks.append({
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": dateText
+            },
+            "accessory": {
+                "type": "button",
                 "text": {
-                    "type": "mrkdwn",
-                    "text": dateText
+                    "type": "plain_text",
+                    "text": "Link to PR",
                 },
-                "accessory": {
-                    "type": "button",
-                    "text": {
-                        "type": "plain_text",
-                        "text": "Link to PR",
-                    },
-                    "url": prUrl,
-                    "action_id": "button-action"
-                }
-            })
+                "url": prUrl,
+                "action_id": "button-action"
+            }
+         })
         say(blocks=blocks)
 # Start your app
 if __name__ == "__main__":
